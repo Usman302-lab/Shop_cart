@@ -43,7 +43,10 @@
 .price-details{
     flex-basis: 30%;
     margin-left: 2rem;
-    gap:2rem
+    gap:2rem;
+    align-self: flex-start;
+    position: sticky;
+    top: 100px;
 }
 .price-details-box{
     box-shadow: 0px 1px 5px var(--mid-gray);
