@@ -1,12 +1,38 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",async () => {
   async function fetchProducts() {
     const response = await axios.get("https://fakestoreapi.com/products");
     console.log("response", response.data);
     return response.data;
   }
-  async function populateProducts() {
-    const products = await fetchProducts();
-    const productList=document.getElementById("productList");
+
+    async function fetchCategories() {
+    const response = await axios.get("https://fakestoreapi.com/products/categories");
+    console.log("response", response.data);
+    return response.data;
+  }
+
+  const filterProductsByCategory = async (category)=>{
+    const response = await axios.get(`https://fakestoreapi.com/products/category/${category}`);
+    return response.data;
+
+  }
+  const downloadedProducts=await fetchProducts();
+
+
+  async function populateProducts(flag, customProducts) {
+    let products = customProducts;
+    const queryParams=new URLSearchParams(window.location.search);
+    const queryParamsObject=Object.fromEntries(queryParams.entries());
+    if (flag === false) {
+      if(queryParamsObject['category']){
+        products=await filterProductsByCategory(queryParamsObject['category']);
+      }
+      else{
+      products = downloadedProducts;
+      }
+    }
+
+    const productList = document.getElementById("productList");
     products.forEach((product) => {
       const productItem = document.createElement("a");
       productItem.target = "_blank";
@@ -25,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
       productName.classList.add("product-name", "text-center");
       productPrice.classList.add("product-price", "text-center");
 
-      productName.textContent = product.title.substring(0,12)+"...";
+      productName.textContent = product.title.substring(0, 12) + "...";
       productPrice.textContent = `$ ${product.price}`;
 
       const imageInsideProductImage = document.createElement("img");
@@ -36,11 +62,44 @@ document.addEventListener("DOMContentLoaded", () => {
       productItem.appendChild(productName);
       productItem.appendChild(productPrice);
 
-
-      productList.append(productItem)
+      productList.append(productItem);
     });
   }
 
 
-  populateProducts();
+  populateProducts(false);
+
+  const filterSearch=document.getElementById("search");
+  filterSearch.addEventListener("click",async ()=>{
+     const productList = document.getElementById("productList");
+     const minPrice=Number(document.getElementById("minPrice").value);
+     const maxPrice=Number(document.getElementById("maxPrice").value);
+     const products=downloadedProducts;
+     const filteredProducts=products.filter((product)=>product.price>=minPrice && product.price<=maxPrice);
+     console.log("fileredProducts",filteredProducts);
+     productList.innerHTML="";
+     populateProducts(true,filteredProducts);
+  })
+
+  const resetFilter=document.getElementById("clear");
+  resetFilter.addEventListener(("click"),()=>{
+    window.location.reload();
+  })
+
+
+
+  async function populateCategories(){
+    const categories = await fetchCategories();
+    console.log("categories",categories)
+    const categoryList=document.getElementById("categoryList");
+    categories.forEach((category)=>{
+        const categoryLink=document.createElement("a");
+        categoryLink.href=`productList.html?category=${category}`;
+        categoryLink.textContent=category;
+        categoryLink.classList.add("d-flex","text-decoration-none");
+        categoryList.appendChild(categoryLink);
+    })
+  }
+
+  populateCategories();
 });
