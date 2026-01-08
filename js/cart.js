@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function populateCart() {
         // Clear cart wrapper before rendering
+         showLoader();
         const wrapper = document.getElementById("order-details-products-wrapper");
         if (wrapper) wrapper.innerHTML = "";
 
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         products.forEach((product) => {
             prepareWrapperDivForCartItems(product, productQuantityMapping, cartProducts);
         });
+        hideLoader();
     }
     populateCart();
 })
