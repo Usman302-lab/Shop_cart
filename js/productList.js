@@ -1,18 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  // Simple custom loader functions
-  const customLoader = document.getElementById("customLoader");
-
-  function showLoader() {
-    if (customLoader) {
-      customLoader.style.display = "flex";
-    }
-  }
-
-  function hideLoader() {
-    if (customLoader) {
-      customLoader.style.display = "none";
-    }
-  }
+  // Loader logic is now in common.js
 
   // Fetch all products
   async function fetchProducts() {
